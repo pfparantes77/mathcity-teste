@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Ponte de Lima² — Teste GPS</title>
+
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+    }
+
+    .card {
+      width: min(90%, 420px);
+      padding: 30px;
+      text-align: center;
+      background: white;
+      border-radius: 18px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    }
+
+    #estado {
+      margin-top: 25px;
+      padding: 20px;
+      border-radius: 12px;
+      font-size: 1.3rem;
+      font-weight: bold;
+    }
+
+    .fora {
+      background: #eeeeee;
+      color: #555;
+    }
+
+    .dentro {
+      background: #dff5e3;
+      color: #176b2c;
+    }
+
+    button {
+      padding: 14px 22px;
+      border: 0;
+      border-radius: 10px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    #dados {
+      margin-top: 20px;
+      font-size: 0.9rem;
+      color: #666;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="card">
+
+  <h1>PONTE DE LIMA²</h1>
+
+  <p>Teste de estação georreferenciada</p>
+
+  <button id="iniciar">
+    Ativar GPS
+  </button>
+
+  <div id="estado" class="fora">
+    📍 Estação desativada
+  </div>
+
+  <div id="dados">
+    A aguardar localização...
+  </div>
+
+</div>
+
+
+<script>
+
+  // ==========================================
+  // CONFIGURAÇÃO DA ESTAÇÃO
+  // ==========================================
+
+const ESTACAO = {
+    nome: "Estação de Teste",
+
+    latitude: 41.6368056,
+    longitude: -8.4703611,
+
+    raio: 50
+};
+
+
+  // ==========================================
+  // FÓRMULA DE HAVERSINE
+  // Calcula a distância entre duas coordenadas
+  // ==========================================
+
+  function calcularDistancia(lat1, lon1, lat2, lon2) {
+
+    const R = 6371000;
+
+    const rad = Math.PI / 180;
+
+    const φ1 = lat1 * rad;
+    const φ2 = lat2 * rad;
+
+    const deltaφ = (lat2 - lat1) * rad;
+    const deltaLambda = (lon2 - lon1) * rad;
+
+    const a =
+      Math.sin(deltaφ / 2) ** 2 +
+      Math.cos(φ1) *
+      Math.cos(φ2) *
+      Math.sin(deltaLambda / 2) ** 2;
+
+    const c =
+      2 * Math.atan2(
+        Math.sqrt(a),
+        Math.sqrt(1 - a)
+      );
+
+    return R * c;
+  }
+
+
+  // ==========================================
+  // VERIFICAR POSIÇÃO
+  // ==========================================
+
+  function verificarPosicao(position) {
+
+    const latitudeAluno =
+      position.coords.latitude;
+
+    const longitudeAluno =
+      position.coords.longitude;
+
+    const precisao =
+      position.coords.accuracy;
+
+
+    const distancia = calcularDistancia(
+
+      latitudeAluno,
+      longitudeAluno,
+
+      ESTACAO.latitude,
+      ESTACAO.longitude
+
+    );
+
+
+    const estado =
+      document.getElementById("estado");
+
+    const dados =
+      document.getElementById("dados");
+
+
+    // ======================================
+    // ALUNO ENTROU NA ESTAÇÃO
+    // ======================================
+
+    if (distancia <= ESTACAO.raio) {
+
+      estado.className = "dentro";
+
+      estado.innerHTML =
+        "✅ ESTÁS DENTRO DA ESTAÇÃO";
+
+
+    } else {
+
+      // ====================================
+      // ALUNO ESTÁ FORA
+      // ====================================
+
+      estado.className = "fora";
+
+      estado.innerHTML =
+        "📍 Estás fora da estação";
+
+    }
+
+
+    dados.innerHTML = `
+
+      <strong>${ESTACAO.nome}</strong><br><br>
+
+      Distância:
+      ${distancia.toFixed(1)} m
+
+      <br>
+
+      Raio da estação:
+      ${ESTACAO.raio} m
+
+      <br>
+
+      Precisão GPS:
+      ±${precisao.toFixed(1)} m
+
+    `;
+
+  }
+
+
+  // ==========================================
+  // ERRO GPS
+  // ==========================================
+
+  function erroGPS(error) {
+
+    document.getElementById("estado").innerHTML =
+      "⚠️ Não foi possível obter a localização.";
+
+    console.error(error);
+
+  }
+
+
+  // ==========================================
+  // ATIVAR GPS
+  // ==========================================
+
+  document
+    .getElementById("iniciar")
+    .addEventListener("click", function () {
+
+      if (!navigator.geolocation) {
+
+        alert(
+          "Este dispositivo não suporta geolocalização."
+        );
+
+        return;
+      }
+
+
+      navigator.geolocation.watchPosition(
+
+        verificarPosicao,
+
+        erroGPS,
+
+        {
+          enableHighAccuracy: true,
+          maximumAge: 2000,
+          timeout: 10000
+        }
+
+      );
+
+    });
+
+</script>
+
+</body>
+</html>
