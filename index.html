@@ -1,269 +1,988 @@
 <!DOCTYPE html>
 <html lang="pt-PT">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Ponte de Lima² — Teste GPS</title>
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+  <title>Ponte de Lima² — MathCity</title>
+
 
   <style>
+
+    /* ========================================
+       ESTILO GERAL
+       ======================================== */
+
     body {
+
       margin: 0;
+
       min-height: 100vh;
+
       display: flex;
+
       justify-content: center;
+
       align-items: center;
+
       font-family: Arial, sans-serif;
+
       background: #f4f4f4;
+
     }
+
 
     .card {
+
       width: min(90%, 420px);
+
       padding: 30px;
+
       text-align: center;
+
       background: white;
+
       border-radius: 18px;
+
       box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+
     }
 
-    #estado {
-      margin-top: 25px;
-      padding: 20px;
-      border-radius: 12px;
-      font-size: 1.3rem;
-      font-weight: bold;
+
+    h1 {
+
+      margin-bottom: 5px;
+
     }
 
-    .fora {
-      background: #eeeeee;
-      color: #555;
+
+    h2 {
+
+      margin-top: 10px;
+
     }
 
-    .dentro {
-      background: #dff5e3;
-      color: #176b2c;
-    }
+
+    /* ========================================
+       BOTÕES
+       ======================================== */
 
     button {
+
       padding: 14px 22px;
+
+      margin-top: 10px;
+
       border: 0;
+
       border-radius: 10px;
+
       font-size: 1rem;
+
       cursor: pointer;
+
+      background: #222;
+
+      color: white;
+
     }
 
-    #dados {
-      margin-top: 20px;
-      font-size: 0.9rem;
-      color: #666;
-      line-height: 1.6;
+
+    button:hover {
+
+      opacity: 0.85;
+
     }
+
+
+    /* ========================================
+       ESTADO GPS
+       ======================================== */
+
+    #estado {
+
+      margin-top: 25px;
+
+      padding: 20px;
+
+      border-radius: 12px;
+
+      font-size: 1.2rem;
+
+      font-weight: bold;
+
+    }
+
+
+    .fora {
+
+      background: #eeeeee;
+
+      color: #555;
+
+    }
+
+
+    .dentro {
+
+      background: #dff5e3;
+
+      color: #176b2c;
+
+    }
+
+
+    /* ========================================
+       INFORMAÇÕES GPS
+       ======================================== */
+
+    #dados {
+
+      margin-top: 20px;
+
+      font-size: 0.9rem;
+
+      color: #666;
+
+      line-height: 1.7;
+
+    }
+
+
+    /* ========================================
+       MISSÃO
+       ======================================== */
+
+    #missao {
+
+      display: none;
+
+      margin-top: 25px;
+
+      padding: 20px;
+
+      border-top: 2px solid #eee;
+
+    }
+
+
+    /* ========================================
+       DESAFIO
+       ======================================== */
+
+    #desafio {
+
+      display: none;
+
+      margin-top: 25px;
+
+      padding-top: 20px;
+
+      border-top: 1px solid #ddd;
+
+    }
+
+
+    /* ========================================
+       CAMPO DE RESPOSTA
+       ======================================== */
+
+    input {
+
+      width: 120px;
+
+      padding: 12px;
+
+      margin-top: 10px;
+
+      font-size: 1.1rem;
+
+      text-align: center;
+
+      border: 1px solid #ccc;
+
+      border-radius: 8px;
+
+    }
+
+
+    /* ========================================
+       FEEDBACK
+       ======================================== */
+
+    #feedback {
+
+      margin-top: 20px;
+
+      padding: 15px;
+
+      border-radius: 10px;
+
+      font-weight: bold;
+
+    }
+
+
+    .correto {
+
+      background: #dff5e3;
+
+      color: #176b2c;
+
+    }
+
+
+    .incorreto {
+
+      background: #ffe4e4;
+
+      color: #9b1c1c;
+
+    }
+
+
+    /* ========================================
+       PROGRESSO
+       ======================================== */
+
+    #progresso {
+
+      margin-top: 15px;
+
+      font-size: 0.85rem;
+
+      color: #777;
+
+    }
+
   </style>
+
 </head>
+
 
 <body>
 
+
 <div class="card">
+
+
+  <!-- ========================================
+       CABEÇALHO
+       ======================================== -->
 
   <h1>PONTE DE LIMA²</h1>
 
-  <p>Teste de estação georreferenciada</p>
+  <p>
+    Matemática fora da sala de aula
+  </p>
+
+
+  <div id="progresso">
+
+    Missão 1 de 8
+
+    <br>
+
+    ○ ○ ○ ○ ○ ○ ○ ○
+
+  </div>
+
+
+
+  <!-- ========================================
+       BOTÃO GPS
+       ======================================== -->
 
   <button id="iniciar">
-    Ativar GPS
+
+    📍 Ativar GPS
+
   </button>
 
-  <div id="estado" class="fora">
+
+
+  <!-- ========================================
+       ESTADO DA ESTAÇÃO
+       ======================================== -->
+
+  <div id="estado"
+       class="fora">
+
     📍 Estação desativada
+
   </div>
 
+
+
+  <!-- ========================================
+       DADOS GPS
+       ======================================== -->
+
   <div id="dados">
+
     A aguardar localização...
+
   </div>
+
+
+
+  <!-- ========================================
+       MISSÃO DESBLOQUEADA
+       ======================================== -->
+
+  <div id="missao">
+
+
+    <h2>
+
+      🎯 Local descoberto!
+
+    </h2>
+
+
+    <p>
+
+      Chegaste à
+
+      <strong>
+        Estação Experimental
+      </strong>.
+
+    </p>
+
+
+    <p>
+
+      A tua localização foi confirmada.
+
+    </p>
+
+
+    <button id="continuar">
+
+      Continuar
+
+    </button>
+
+
+
+    <!-- ======================================
+         DESAFIO MATEMÁTICO
+         ====================================== -->
+
+    <div id="desafio">
+
+
+      <h3>
+
+        👀 Observa
+
+      </h3>
+
+
+      <p>
+
+        Imagina que neste local existe
+        um terreno retangular.
+
+      </p>
+
+
+      <h3>
+
+        🧮 Desafio Matemático
+
+      </h3>
+
+
+      <p>
+
+        Um terreno retangular possui
+
+        <strong>
+          12 metros
+        </strong>
+
+        de comprimento e
+
+        <strong>
+          8 metros
+        </strong>
+
+        de largura.
+
+      </p>
+
+
+      <p>
+
+        Qual é a sua área?
+
+      </p>
+
+
+      <input
+
+        type="number"
+
+        id="resposta"
+
+        placeholder="m²"
+
+      >
+
+
+      <br>
+
+
+      <button id="submeter">
+
+        Submeter resposta
+
+      </button>
+
+
+      <div id="feedback"></div>
+
+
+    </div>
+
+
+  </div>
+
 
 </div>
 
 
+
 <script>
 
-  // ==========================================
-  // CONFIGURAÇÃO DA ESTAÇÃO
-  // ==========================================
 
-const ESTACAO = {
+  /* ==========================================
+     CONFIGURAÇÃO DA ESTAÇÃO
+     ========================================== */
+
+
+  const ESTACAO = {
+
     nome: "Estação de Teste",
 
     latitude: 41.6368056,
+
     longitude: -8.4703611,
 
     raio: 50
-};
+
+  };
 
 
-  // ==========================================
-  // FÓRMULA DE HAVERSINE
-  // Calcula a distância entre duas coordenadas
-  // ==========================================
 
-  function calcularDistancia(lat1, lon1, lat2, lon2) {
+  /* ==========================================
+     FÓRMULA DE HAVERSINE
+
+     Calcula a distância entre duas
+     coordenadas geográficas.
+     ========================================== */
+
+
+  function calcularDistancia(
+
+    lat1,
+
+    lon1,
+
+    lat2,
+
+    lon2
+
+  ) {
+
 
     const R = 6371000;
 
+
     const rad = Math.PI / 180;
 
-    const φ1 = lat1 * rad;
-    const φ2 = lat2 * rad;
 
-    const deltaφ = (lat2 - lat1) * rad;
-    const deltaLambda = (lon2 - lon1) * rad;
+    const phi1 = lat1 * rad;
+
+    const phi2 = lat2 * rad;
+
+
+    const deltaPhi =
+
+      (lat2 - lat1) * rad;
+
+
+    const deltaLambda =
+
+      (lon2 - lon1) * rad;
+
+
 
     const a =
-      Math.sin(deltaφ / 2) ** 2 +
-      Math.cos(φ1) *
-      Math.cos(φ2) *
+
+      Math.sin(deltaPhi / 2) ** 2
+
+      +
+
+      Math.cos(phi1)
+
+      *
+
+      Math.cos(phi2)
+
+      *
+
       Math.sin(deltaLambda / 2) ** 2;
 
+
+
     const c =
-      2 * Math.atan2(
+
+      2
+
+      *
+
+      Math.atan2(
+
         Math.sqrt(a),
+
         Math.sqrt(1 - a)
+
       );
 
+
+
     return R * c;
+
   }
 
 
-  // ==========================================
-  // VERIFICAR POSIÇÃO
-  // ==========================================
+
+  /* ==========================================
+     VERIFICAR POSIÇÃO GPS
+     ========================================== */
+
 
   function verificarPosicao(position) {
 
+
     const latitudeAluno =
+
       position.coords.latitude;
 
+
     const longitudeAluno =
+
       position.coords.longitude;
 
+
     const precisao =
+
       position.coords.accuracy;
+
+
+
+    /* ----------------------------------------
+       CALCULAR DISTÂNCIA
+       ---------------------------------------- */
 
 
     const distancia = calcularDistancia(
 
       latitudeAluno,
+
       longitudeAluno,
 
       ESTACAO.latitude,
+
       ESTACAO.longitude
 
     );
 
 
+
     const estado =
+
       document.getElementById("estado");
 
+
     const dados =
+
       document.getElementById("dados");
 
 
-    // ======================================
-    // ALUNO ENTROU NA ESTAÇÃO
-    // ======================================
+    const missao =
+
+      document.getElementById("missao");
+
+
+
+    /* ========================================
+       ALUNO ESTÁ DENTRO DA ESTAÇÃO
+       ======================================== */
+
 
     if (distancia <= ESTACAO.raio) {
 
+
       estado.className = "dentro";
 
+
       estado.innerHTML =
+
         "✅ ESTÁS DENTRO DA ESTAÇÃO";
 
 
-    } else {
+      missao.style.display = "block";
 
-      // ====================================
-      // ALUNO ESTÁ FORA
-      // ====================================
-
-      estado.className = "fora";
-
-      estado.innerHTML =
-        "📍 Estás fora da estação";
 
     }
 
 
+    /* ========================================
+       ALUNO ESTÁ FORA DA ESTAÇÃO
+       ======================================== */
+
+
+    else {
+
+
+      estado.className = "fora";
+
+
+      estado.innerHTML =
+
+        "📍 Estás fora da estação";
+
+
+      missao.style.display = "none";
+
+
+    }
+
+
+
+    /* ========================================
+       MOSTRAR INFORMAÇÕES GPS
+       ======================================== */
+
+
     dados.innerHTML = `
 
-      <strong>${ESTACAO.nome}</strong><br><br>
+      <strong>
+        ${ESTACAO.nome}
+      </strong>
+
+      <br><br>
 
       Distância:
-      ${distancia.toFixed(1)} m
+
+      <strong>
+        ${distancia.toFixed(1)} m
+      </strong>
 
       <br>
 
       Raio da estação:
+
       ${ESTACAO.raio} m
 
       <br>
 
       Precisão GPS:
+
       ±${precisao.toFixed(1)} m
 
     `;
 
+
   }
 
 
-  // ==========================================
-  // ERRO GPS
-  // ==========================================
+
+  /* ==========================================
+     ERRO GPS
+     ========================================== */
+
 
   function erroGPS(error) {
 
-    document.getElementById("estado").innerHTML =
+
+    const estado =
+
+      document.getElementById("estado");
+
+
+    estado.className = "fora";
+
+
+    estado.innerHTML =
+
       "⚠️ Não foi possível obter a localização.";
+
 
     console.error(error);
 
   }
 
 
-  // ==========================================
-  // ATIVAR GPS
-  // ==========================================
+
+  /* ==========================================
+     ATIVAR GPS
+     ========================================== */
+
 
   document
+
     .getElementById("iniciar")
-    .addEventListener("click", function () {
 
-      if (!navigator.geolocation) {
+    .addEventListener(
 
-        alert(
-          "Este dispositivo não suporta geolocalização."
-        );
+      "click",
 
-        return;
-      }
+      function () {
 
 
-      navigator.geolocation.watchPosition(
+        if (!navigator.geolocation) {
 
-        verificarPosicao,
 
-        erroGPS,
+          alert(
 
-        {
-          enableHighAccuracy: true,
-          maximumAge: 2000,
-          timeout: 10000
+            "Este dispositivo não suporta geolocalização."
+
+          );
+
+
+          return;
+
         }
 
-      );
 
-    });
+
+        document
+
+          .getElementById("estado")
+
+          .innerHTML =
+
+          "📡 A procurar a tua localização...";
+
+
+
+        navigator.geolocation.watchPosition(
+
+
+          verificarPosicao,
+
+
+          erroGPS,
+
+
+          {
+
+            enableHighAccuracy: true,
+
+            maximumAge: 2000,
+
+            timeout: 10000
+
+          }
+
+
+        );
+
+
+      }
+
+    );
+
+
+
+  /* ==========================================
+     BOTÃO CONTINUAR
+     ========================================== */
+
+
+  document
+
+    .getElementById("continuar")
+
+    .addEventListener(
+
+      "click",
+
+      function () {
+
+
+        document
+
+          .getElementById("desafio")
+
+          .style.display = "block";
+
+
+        this.style.display = "none";
+
+
+      }
+
+    );
+
+
+
+  /* ==========================================
+     VALIDAR RESPOSTA
+     ========================================== */
+
+
+  document
+
+    .getElementById("submeter")
+
+    .addEventListener(
+
+      "click",
+
+      function () {
+
+
+        const campoResposta =
+
+          document.getElementById("resposta");
+
+
+        const feedback =
+
+          document.getElementById("feedback");
+
+
+        const resposta =
+
+          Number(campoResposta.value);
+
+
+
+        /* ------------------------------------
+           CAMPO VAZIO
+           ------------------------------------ */
+
+
+        if (campoResposta.value === "") {
+
+
+          feedback.className = "incorreto";
+
+
+          feedback.innerHTML =
+
+            "⚠️ Introduz uma resposta.";
+
+
+          return;
+
+        }
+
+
+
+        /* ------------------------------------
+           RESPOSTA CORRETA
+           ------------------------------------ */
+
+
+        if (resposta === 96) {
+
+
+          feedback.className = "correto";
+
+
+          feedback.innerHTML = `
+
+            ✅ CORRETO!
+
+            <br><br>
+
+            12 × 8 = 96 m²
+
+            <br><br>
+
+            🏆 +100 pontos
+
+            <br><br>
+
+            Missão concluída!
+
+          `;
+
+
+
+          document
+
+            .getElementById("progresso")
+
+            .innerHTML = `
+
+              Missão 1 de 8
+
+              <br>
+
+              ● ○ ○ ○ ○ ○ ○ ○
+
+              <br><br>
+
+              🏆 100 pontos
+
+            `;
+
+
+        }
+
+
+        /* ------------------------------------
+           RESPOSTA INCORRETA
+           ------------------------------------ */
+
+
+        else {
+
+
+          feedback.className = "incorreto";
+
+
+          feedback.innerHTML = `
+
+            ❌ Ainda não está correto.
+
+            <br><br>
+
+            💡 Pista:
+
+            recorda como se calcula
+            a área de um retângulo.
+
+            <br><br>
+
+            Tenta novamente.
+
+          `;
+
+
+        }
+
+
+      }
+
+    );
+
 
 </script>
 
+
 </body>
+
 </html>
